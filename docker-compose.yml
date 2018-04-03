@@ -1,0 +1,68 @@
+version: '2'
+
+services:
+  nginx:
+#    container_name: 'tt_nginx'
+    depends_on: 
+      - fpm
+    #dockerfile: ./Dockerfile # путь до докер файла указываем относительно директории в build
+    build: ./containers/nginx
+    ports:
+      - ${NGINX_PORT}:80
+    expose:
+      - "${NGINX_PORT}"
+    volumes:
+      - ./logs/nginx:/etc/logs/nginx
+    volumes_from:
+      - fpm:rw
+    environment:
+      - NGINX_HOST=localhost
+      - NGINX_PORT=80
+    #command: chown -R www-data:www-data /var/www && nginx -g "daemon off;" # Можно было указать в докер-фале, но можно и здесь)
+    #command: nginx -g "daemon off;" 
+    links:
+      - fpm
+  fpm:
+#    container_name: 'tt_phpfpm'
+    #dockerfile: ./Dockerfile
+    build: ./containers/php-fpm
+    volumes:
+      - ./www:/var/www/html:rw
+#    depends_on:
+#      - tt_mysql
+#    links:
+#      - tt_mysql
+#      - tt_mysql:sql
+##  phpcli:
+##    container_name: 'tt_phpcli'
+##    #dockerfile: ./Dockerfile
+##    build: ./containers/php-cli
+###    volumes:
+##      #- ./php-code:/var/www:rw
+#  tt_mysql:
+#    #container_name: 'tt_mysql'
+#    image: mysql:5.7.17
+#    expose:
+#      - "${MYSQL_PORT}"
+#    ports:
+#      - ${MYSQL_PORT}:3306
+#    volumes:
+#      - ./containers/mysql/conf:/etc/mysql/conf.d
+#      - ./database:/var/lib/mysql
+#      - ./logs/mysql:/etc/logs/mysql
+#      - ./init_sql:/init_sql
+#    environment:
+#      - MYSQL_ROOT_PASSWORD=qwerty
+##    domainname: mysql1
+##    hostname: mysql2
+#
+#  phpmyadmin:
+#    #container_name: 'tt_phpmyadmin'
+#    image: phpmyadmin/phpmyadmin
+#    links:
+#      - tt_mysql:db
+#    ports:
+#      - ${PMA_PORT}:80
+#    environment:
+#      PMA_USER: root
+#      PMA_PASSWORD: qwerty

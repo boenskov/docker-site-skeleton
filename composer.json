@@ -1,0 +1,10 @@
+{
+    "name": "boenskov/converter_api",
+    "authors": [
+        {
+            "name": "Boenskov Denis",
+            "email": "boenskov@yandex.ru"
+        }
+    ],
+    "require": {}
+}
