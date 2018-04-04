@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
         curl  \
         libpng-dev \
         libmagickwand-dev \
-        drush \
+#        drush \
         mysql-client
         
 

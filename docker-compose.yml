@@ -1,23 +1,50 @@
 version: '2'
 
 services:
-  nginx:
+  app_api:
+    build: ./containers/app_api
+    volumes:
+      - ./www/api:/var/www/html/api:rw
+  app_site:
+    build: ./containers/app_site
+    volumes:
+      - ./www/site:/var/www/html/site:rw
+  nginx_api:
 #    container_name: 'tt_nginx'
-    depends_on: 
+    depends_on:
       - fpm
     #dockerfile: ./Dockerfile # путь до докер файла указываем относительно директории в build
-    build: ./containers/nginx
+    build: ./containers/nginx_api
     ports:
-      - ${NGINX_PORT}:80
+      - ${NGINX_API_PORT}:80
     expose:
-      - "${NGINX_PORT}"
+      - "${NGINX_API_PORT}"
     volumes:
       - ./logs/nginx:/etc/logs/nginx
     volumes_from:
       - fpm:rw
-    environment:
-      - NGINX_HOST=localhost
-      - NGINX_PORT=80
+#    environment:
+#      - NGINX_HOST=localhost
+#      - NGINX_PORT=8080
+    links:
+      - fpm
+  nginx_site:
+#    container_name: 'tt_nginx'
+    depends_on: 
+      - fpm
+    #dockerfile: ./Dockerfile # путь до докер файла указываем относительно директории в build
+    build: ./containers/nginx_site
+    ports:
+      - ${NGINX_SITE_PORT}:80
+    expose:
+      - "${NGINX_SITE_PORT}"
+    volumes:
+      - ./logs/nginx:/etc/logs/nginx
+    volumes_from:
+      - fpm:rw
+#    environment:
+#      - NGINX_HOST=localhost
+#      - NGINX_PORT=80
     #command: chown -R www-data:www-data /var/www && nginx -g "daemon off;" # Можно было указать в докер-фале, но можно и здесь)
     #command: nginx -g "daemon off;" 
     links:
@@ -26,8 +53,14 @@ services:
 #    container_name: 'tt_phpfpm'
     #dockerfile: ./Dockerfile
     build: ./containers/php-fpm
-    volumes:
-      - ./www:/var/www/html:rw
+#    links:
+#      - app_api
+#      - app_site
+    volumes_from:
+      - app_api
+      - app_site
+#    volumes:
+#      - ./www:/var/www/html:rw
 #    depends_on:
 #      - tt_mysql
 #    links:
